@@ -1,0 +1,5 @@
+{
+    "login_server": "csmenginesstaging.azurecr.io",
+    "simulator_repository": "",
+    "simulator_version": "latest"
+}

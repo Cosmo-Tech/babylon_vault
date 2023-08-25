@@ -1,0 +1,67 @@
+name: "Deployment Vault Server"
+env:
+  ARM_CLIENT_ID: "${{vars.CLIENT_ID}}"
+  ARM_TENANT_ID: "${{vars.TENANT_ID}}"
+  ARM_CLIENT_SECRET: "${{secrets.CLIENT_SECRET}}"
+  ARM_SUBSCRIPTION_ID: "${{vars.SUBSCRIPTION_ID}}"
+
+on:
+  push:
+    branches:
+    - deploy
+
+jobs:
+  vault:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+    
+    - name: check version terraform
+      run: terraform --version
+    - name: variables terraform
+      run: |
+        cat >vault/deploy/terraform.tfvars <<EOF
+        client_id = "${{vars.CLIENT_ID}}"
+        tenant_id = "${{vars.TENANT_ID}}"
+        client_secret = "${{secrets.CLIENT_SECRET}}"
+        subscription_id = "${{vars.SUBSCRIPTION_ID}}"
+        public_key = "${{vars.PUBLIC_KEY}}"
+        EOF
+    - name: run deploy terraform script
+      run: |
+        chmod +x vault/deploy/deploy.sh
+        cd vault/deploy/;./deploy.sh
+    - name: retrieve addr
+      run: |
+        cd vault/deploy
+        addr=$(terraform output addr)
+        echo "VAULT_ADDR=$(echo "$addr" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
+
+    - name: run vault init script
+      run: |
+        sleep 60
+        chmod +x vault/token.sh
+        ./vault/token.sh
+
+    - name: run nginx init
+      run: |
+        sleep 10
+        chmod +x vault/nginx.sh
+        ./vault/nginx.sh
+
+    - name: vault install
+      run: |
+        chmod +x vault/install.sh
+        ./vault/install.sh
+    
+    - name: upload configuration
+      run: |
+        chmod +x vault/upload.sh
+        cd vault/
+        ./upload.sh cosmotech ${{vars.TENANT_ID}} dev
+        ./upload.sh cosmotech ${{vars.TENANT_ID}} perf
+        ./upload.sh cosmotech ${{vars.TENANT_ID}} staging
+        ./addpolicies.sh cosmotech ${{vars.TENANT_ID}}

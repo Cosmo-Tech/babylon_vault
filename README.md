@@ -81,27 +81,3 @@ Tips:
     ssh azureuser@ip_address
     ```
     
-1. First, generate initial root token:
-
-    ```bash
-    az vm run-command invoke \
-        -g rg-vaultserver \
-        -n vm-vault \
-        --command-id RunShellScript \
-        --scripts "export VAULT_ADDR=http://127.0.0.1:8200;vault operator init" \
-        --output yaml >> response.yaml
-    yq '.value[0].message' response.yaml >> token.yaml
-    awk '$3 ~ /Token:/ {print "VAULT_TOKEN="$4}' token.yaml
-    ```
-
-1. Enable secrets for babylon (scripts: upload.sh)
-
-    ```bash
-    ./upload.sh <organization_name> <tenant_id> <platform_id>
-    ```
-
-1. Enable SuperAdmin, Admin and User policies (scripts: addpolicies.sh)
-
-    ```bash
-    ./addpolicies.sh <organization_name> <tenant_id>
-    ```
