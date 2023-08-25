@@ -61,7 +61,5 @@ jobs:
       run: |
         chmod +x vault/upload.sh
         cd vault/
-        ./upload.sh cosmotech ${{vars.TENANT_ID}} dev
-        ./upload.sh cosmotech ${{vars.TENANT_ID}} perf
-        ./upload.sh cosmotech ${{vars.TENANT_ID}} staging
+        ./upload.sh cosmotech ${{vars.TENANT_ID}} <platform_name> # config/platform_name
         ./addpolicies.sh cosmotech ${{vars.TENANT_ID}}
