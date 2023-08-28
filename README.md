@@ -67,6 +67,42 @@ Tips:
     public_key = ""
     ```
 
+1. Setup new configuration
+
+    A platform configuration contains differents config files:
+
+    - acr.json
+    - adx.json
+    - adt.json
+    - api.json
+    - app.json
+    - azure.json
+    - babylon.json
+    - github.json
+    - platform.json
+    - powerbi.json
+    - webapp.json
+    
+    <br>
+    You will find the template in `vault/config` directory.
+
+    You need to create a directory per platform and add the command `upload.sh` in section `upload configuration`.
+
+    ```bash
+    - name: upload configuration
+      run: |
+        chmod +x vault/upload.sh
+        cd vault/
+        ./upload.sh cosmotech ${{vars.TENANT_ID}} <platform_1> # vault/config/platform_1
+        ./upload.sh cosmotech ${{vars.TENANT_ID}} <platform_2> # vault/config/platform_2
+        
+        ...
+
+        ./addpolicies.sh cosmotech ${{vars.TENANT_ID}}
+    ```
+
+<br>
+
 1. Run the Terraform commands:
 
     ```bash
