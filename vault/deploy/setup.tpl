@@ -110,4 +110,4 @@ chmod +x /home/azureuser/nginx_init.sh
 sudo systemctl start nginx
 
 # It will renew all the certificates, the 1st of each month (0 0 1 * *)
-sudo echo "0 0 1 * * /usr/bin/certbot renew --pre-hook “service nginx stop” --post-hook “service nginx start” --quiet > /etc/letsencrypt/renewals.log" | crontab -
+sudo echo "0 0 1 * * /usr/bin/certbot renew --pre-hook "sudo systemctl stop nginx” --post-hook "sudo systemctl start nginx” --quiet > /etc/letsencrypt/renewals.log" | crontab -
