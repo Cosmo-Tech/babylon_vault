@@ -1,7 +1,8 @@
 #!/bin/bash
+# param 1: resource_group
 
 az vm run-command invoke \
-        -g rg-vaultserver \
+        -g $1 \
         -n vm-vault \
         --command-id RunShellScript \
         --scripts "export VAULT_ADDR=http://127.0.0.1:8200;vault operator init" \
