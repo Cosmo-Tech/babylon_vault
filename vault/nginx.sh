@@ -1,7 +1,8 @@
 #!/bin/bash
+# param 1: resource_group
 
 az vm run-command invoke \
-        -g rg-vaultserver \
+        -g $1 \
         -n vm-vault \
         --command-id RunShellScript \
         --scripts "cd /home/azureuser; ./nginx_init.sh" \

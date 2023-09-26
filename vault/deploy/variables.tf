@@ -47,15 +47,15 @@ variable "vault_version" {
 }
 
 variable "resource_group_name" {
-  default = "rg-vaultserver"
+  default = ""
 }
 
 variable "platform" {
-  default = "dev"
+  default = ""
 }
 
 variable "domain_label" {
-  default = "cosmovault"
+  default = ""
 }
 
 variable "email" {

@@ -29,11 +29,13 @@ jobs:
         client_secret = "${{secrets.CLIENT_SECRET}}"
         subscription_id = "${{vars.SUBSCRIPTION_ID}}"
         public_key = "${{vars.PUBLIC_KEY}}"
+        resource_group_name = "${{vars.RESOURCE_GROUP}}"
+        domain_label = "${{vars.DOMAIN_LABEL}}"
         EOF
     - name: run deploy terraform script
       run: |
         chmod +x vault/deploy/deploy.sh
-        cd vault/deploy/;./deploy.sh
+        cd vault/deploy/;./deploy.sh 
     - name: retrieve addr
       run: |
         cd vault/deploy
@@ -44,13 +46,13 @@ jobs:
       run: |
         sleep 60
         chmod +x vault/token.sh
-        ./vault/token.sh
+        ./vault/token.sh "${{vars.RESOURCE_GROUP}}"
 
     - name: run nginx init
       run: |
         sleep 10
         chmod +x vault/nginx.sh
-        ./vault/nginx.sh
+        ./vault/nginx.sh "${{vars.RESOURCE_GROUP}}"
 
     - name: vault install
       run: |
@@ -61,5 +63,4 @@ jobs:
       run: |
         chmod +x vault/upload.sh
         cd vault/
-        ./upload.sh cosmotech ${{vars.TENANT_ID}} <platform_name> # config/platform_name
-        ./addpolicies.sh cosmotech ${{vars.TENANT_ID}}
+        ./addpolicies.sh "${{vars.DOMAIN_LABEL}}" ${{vars.TENANT_ID}}
