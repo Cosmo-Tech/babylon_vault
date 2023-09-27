@@ -1,5 +1,5 @@
 #!/bin/bash
-# param $1: organization_name
+# param $1: tenant_name
 # param $2: tenant_id
 
 vault auth enable -path=userpass-$1 userpass
