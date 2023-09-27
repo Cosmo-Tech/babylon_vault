@@ -65,6 +65,8 @@ Tips:
     client_secret = ""
     subscription_id = ""
     public_key = ""
+    resource_group_name = ""
+    domain_label = ""
     ```
 
 1. Setup new configuration
