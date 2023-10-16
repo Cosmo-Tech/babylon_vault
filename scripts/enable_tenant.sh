@@ -2,6 +2,12 @@
 # param $1: tenant_name
 # param $2: tenant_id
 
+# enable path
+vault secrets enable -path=$1 -version=1 kv
+vault secrets enable -path=organization -version=1 kv
+vault kv put -mount=organization $1 tenant=$2
+
+# add policies
 vault auth enable -path=userpass-$1 userpass
 vault policy write $1_superadmin -<<EOF
 path "$1/$2/*" {

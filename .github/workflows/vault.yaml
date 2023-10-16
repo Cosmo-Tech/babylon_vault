@@ -8,7 +8,7 @@ env:
 on:
   push:
     branches:
-    - deploy
+    - main
 
 jobs:
   vault:
@@ -17,13 +17,12 @@ jobs:
     - uses: actions/checkout@v3
     - uses: azure/login@v1
       with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-    
+        creds: '{"clientId":"${{ vars.CLIENT_ID }}","clientSecret":"${{ secrets.CLIENT_SECRET }}","subscriptionId":"${{ vars.SUBSCRIPTION_ID }}","tenantId":"${{ vars.TENANT_ID }}"}'
     - name: check version terraform
       run: terraform --version
     - name: variables terraform
       run: |
-        cat >vault/deploy/terraform.tfvars <<EOF
+        cat >vault/terraform.tfvars <<EOF
         client_id = "${{vars.CLIENT_ID}}"
         tenant_id = "${{vars.TENANT_ID}}"
         client_secret = "${{secrets.CLIENT_SECRET}}"
@@ -34,33 +33,28 @@ jobs:
         EOF
     - name: run deploy terraform script
       run: |
-        chmod +x vault/deploy/deploy.sh
-        cd vault/deploy/;./deploy.sh 
+        chmod +x scripts/deploy.sh
+        ./scripts/deploy.sh 
     - name: retrieve addr
       run: |
-        cd vault/deploy
+        cd vault
         addr=$(terraform output addr)
         echo "VAULT_ADDR=$(echo "$addr" | sed -e 's/^"//' -e 's/"$//')" >> $GITHUB_ENV
-
     - name: run vault init script
       run: |
         sleep 60
-        chmod +x vault/token.sh
-        ./vault/token.sh "${{vars.RESOURCE_GROUP}}"
-
+        chmod +x scripts/token.sh
+        ./scripts/token.sh "${{vars.RESOURCE_GROUP}}"
     - name: run nginx init
       run: |
         sleep 10
-        chmod +x vault/nginx.sh
-        ./vault/nginx.sh "${{vars.RESOURCE_GROUP}}"
-
+        chmod +x scripts/nginx.sh
+        ./scripts/nginx.sh "${{vars.RESOURCE_GROUP}}"
     - name: vault install
       run: |
-        chmod +x vault/install.sh
-        ./vault/install.sh
-    
+        chmod +x scripts/install.sh
+        ./scripts/install.sh
     - name: upload configuration
       run: |
-        chmod +x vault/upload.sh
-        cd vault/
-        ./addpolicies.sh "${{vars.DOMAIN_LABEL}}" ${{vars.TENANT_ID}}
+        chmod +x scripts/enable_tenant.sh
+        ./scripts/enable_tenant.sh ${{ vars.TENANT_NAME }} ${{vars.TENANT_ID}}
