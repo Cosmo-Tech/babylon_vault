@@ -43,43 +43,38 @@ Tips:
 
 > **IMPORTANT:** Ensure that your Service Principal has appropriate permissions to provision virtual machines, networks, as well as **Azure Key Vault**. Refer to the [Azure documentation](https://docs.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal).
 
-## Auto-unseal Steps
+## Create a key ssh
 
-1. Set this location as your working directory
+### Step 1
 
-1. Set ssh_keygen (public_key)
+```bash
+cd ~/.ssh
+ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
+cat ~/.ssh/id_rsa.pub
+# Then select and copy the contents of the id_rsa.pub file
+# displayed in the terminal to your clipboard
+```
 
-    ```bash
-    $ ssh-keygen -t rsa -b 4096 -C "your_email@example.com"
-    $ cat ~/.ssh/id_rsa.pub
-    # Then select and copy the contents of the id_rsa.pub file
-    # displayed in the terminal to your clipboard
-    # Then assign this key to the 'public_key' variable in terraforms.tfvars file
-    ```
+### Step 2
 
-1. Provide Azure credentials in the `terraform.tfvars`
+Go to https://github.com/Cosmo-Tech/babylon_vault/settings/variables/actions and update deploy values
 
-    ```bash
-    tenant_id = ""
-    client_id = ""
-    client_secret = ""
-    subscription_id = ""
-    public_key = ""
-    resource_group_name = ""
-    domain_label = ""
-    ```
-<br>
+* `CLIENT_ID`
+* `DOMAIN_LABEL`
+* `PUBLIC_KEY`
+* `RESOURCE_GROUP`
+* `SUBSCRIPTION_ID`
+* `TENANT_ID`
+* `TENANT_NAME`
 
-1. Run the Terraform commands:
+Go to https://github.com/Cosmo-Tech/babylon_vault/settings/secrets/actions and update secret value (if needed)
 
-    ```bash
-    $ terraform init
-    $ terraform plan -out tfvaultplan
-    $ terraform apply tfvaultplan
-    ...
-    Outputs:
+* `CLIENT_SECRET`  
 
-    
-    VAULT_ADDR=http://ip_address:8200
-    ssh azureuser@ip_address
-    ```
+### Step 3
+
+Run workflow
+
+### Post-run
+
+Go to https://github.com/Cosmo-Tech/babylon_vault/actions. In the last workflow, go to '`run vault init script`' step and copy '`Initial Root Token`' to access the deployed vault in Azure.

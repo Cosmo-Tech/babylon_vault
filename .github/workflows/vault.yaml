@@ -6,9 +6,7 @@ env:
   ARM_SUBSCRIPTION_ID: "${{vars.SUBSCRIPTION_ID}}"
 
 on:
-  push:
-    branches:
-    - main
+  workflow_dispatch:
 
 jobs:
   vault:
